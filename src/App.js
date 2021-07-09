@@ -1,15 +1,15 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 function App() {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  async function fetchPokemons() {
+  const fetchPokemons = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://pokeapi.co/api/v2/pokemons/");
+      const response = await fetch("https://pokeapi.co/api/v2/pokemon/");
 
       if (!response.ok) {
         throw new Error("Something went wrong!");
@@ -25,26 +25,30 @@ function App() {
       setError(error.message);
       setLoading(false);
     }
-  }
+  }, []);
 
+  useEffect(() => {
+    fetchPokemons();
+  }, [fetchPokemons]);
+
+  let content = <div>No Data Found</div>;
+  if (pokemons.length > 0) {
+    content = pokemons.map((pokemon) => (
+      <div key={pokemon.name} className='pokemon-div'>
+        {pokemon.name}
+      </div>
+    ));
+  } else if (error) {
+    content = error;
+  } else if (loading) {
+    content = <div>Loading Data</div>;
+  }
   return (
     <div className='App'>
       <button className='pokemon-div' onClick={fetchPokemons}>
         Get Pokemons
       </button>
-
-      {loading && "Loading Data"}
-      {!loading && error && error}
-
-      {!loading &&
-        !error &&
-        pokemons.length === 0 &&
-        "No Data, Sorry something went wrong"}
-      {pokemons.map((pokemon) => (
-        <div key={pokemon.name} className='pokemon-div'>
-          {pokemon.name}
-        </div>
-      ))}
+      {content}
     </div>
   );
 }
