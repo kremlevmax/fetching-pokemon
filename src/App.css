@@ -1,5 +1,7 @@
-.App {
-  text-align: center;
+.pokemon-div {
+  border: 2px solid black;
+  margin: 10px;
+  display: inline-block;
 }
 
 .App-logo {
